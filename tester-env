@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RUN_SUFFIX="${RUN_ID:+-${RUN_ID}}"
+PROJECT="tester-env-plainpad${RUN_SUFFIX}"
+IMAGE_NAME="${IMAGE_TAG:-tester-env-plainpad:dev}"
+PORT="${PLAINPAD_PORT:-8098}"
+COMPOSE=(docker compose -p "$PROJECT" -f "$SCRIPT_DIR/docker-compose.tester-env.yml")
+
+compose() { IMAGE_TAG="$IMAGE_NAME" NGINX_IMAGE="${IMAGE_NAME%:*}:${IMAGE_NAME##*:}-nginx" PLAINPAD_PORT="$PORT" "${COMPOSE[@]}" "$@"; }
+wait_for() { for _ in {1..60}; do curl -fsS "http://localhost:${PORT}/" >/dev/null && return; sleep 1; done; return 1; }
+migrate() { for _ in {1..30}; do compose exec -T php-fpm php server/artisan migrate:fresh --seed --force && return; sleep 2; done; return 1; }
+
+case "${1:-help}" in
+  deploy) echo "==> Building and starting Plainpad"; compose up -d --build; echo "==> Migrating and seeding"; migrate; wait_for; echo "==> Ready: http://localhost:${PORT}/" ;;
+  seed) echo "==> Seeding Plainpad notes"; compose exec -T php-fpm php server/artisan db:seed --class=Database\\Seeders\\NotesSeeder --force ;;
+  verify) echo "==> Verifying Plainpad seed"; token="$(curl -fsS -X POST "http://localhost:${PORT}/api.php/v1/sessions" -H 'Content-Type: application/json' --data '{"email":"admin@example.org","password":"12345678"}' | python3 -c 'import json,sys; print(json.load(sys.stdin)["token"])')"; curl -fsS "http://localhost:${PORT}/api.php/v1/notes?sort=title&direction=asc" -H "Authorization: Bearer $token" | python3 -c 'import json,sys; notes=json.load(sys.stdin); expected=[("Design Review Checklist",False,"2024-03-20T11:15:00.000000Z"),("Incident Retrospective: API Timeout",False,"2024-03-12T16:45:00.000000Z"),("Quarterly Launch Plan",True,"2024-03-28T15:30:00.000000Z"),("Vendor Renewal Notes",False,"2024-03-05T09:30:00.000000Z")]; assert [(n["title"],n["pinned"],n["updated_at"]) for n in notes] == expected; assert "April rollout" in notes[2]["content"]'; echo "==> Seed verified: 4 notes" ;;
+  reset) echo "==> Removing Plainpad containers and data"; compose down -v --remove-orphans ;;
+  stop) echo "==> Stopping Plainpad"; compose stop ;;
+  status) compose ps ;;
+  logs) compose logs -f --tail=100 ;;
+  *) printf 'Usage: %s {deploy|seed|verify|reset|stop|status|logs}\n' "$0" ;;
+esac

@@ -24,7 +24,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class UsersSeeder extends Seeder
 {
@@ -36,9 +35,9 @@ class UsersSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'id' => '00000000-0000-4000-8000-000000000001',
+            'created_at' => '2024-01-01 09:00:00',
+            'updated_at' => '2024-01-01 09:00:00',
             'name' => 'Admin',
             'email' => 'admin@example.org',
             'password' => Hash::make('12345678'),

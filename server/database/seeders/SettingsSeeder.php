@@ -23,7 +23,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class SettingsSeeder extends Seeder
 {
@@ -34,76 +33,21 @@ class SettingsSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'default_locale',
-            'value' => 'en-US'
-        ]);
+        $settings = [
+            'default_locale' => 'en-US', 'mail_driver' => 'smtp', 'mail_host' => 'smtp.mailtrap.io',
+            'mail_port' => '2525', 'mail_username' => '', 'mail_password' => '', 'mail_encryption' => 'tls',
+            'mail_from_address' => 'hello@example.org', 'mail_from_name' => 'Plainpad',
+        ];
 
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'mail_driver',
-            'value' => 'smtp'
-        ]);
-
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'mail_host',
-            'value' => 'smtp.mailtrap.io'
-        ]);
-
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'mail_port',
-            'value' => '2525'
-        ]);
-
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'mail_username',
-            'value' => ''
-        ]);
-
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'mail_password',
-            'value' => ''
-        ]);
-
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'mail_encryption',
-            'value' => 'tls'
-        ]);
-
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'mail_from_address',
-            'value' => 'hello@example.org'
-        ]);
-
-        DB::table('settings')->insert([
-            'id' => (string)Str::uuid(),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'name' => 'mail_from_name',
-            'value' => 'Plainpad'
-        ]);
+        $id = 100;
+        foreach ($settings as $index => $value) {
+            DB::table('settings')->insert([
+                'id' => '00000000-0000-4000-8000-' . str_pad((string) $id++, 12, '0', STR_PAD_LEFT),
+                'created_at' => '2024-01-01 09:00:00',
+                'updated_at' => '2024-01-01 09:00:00',
+                'name' => $index,
+                'value' => $value,
+            ]);
+        }
     }
 }

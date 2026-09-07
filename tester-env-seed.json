@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "app": "plainpad",
+  "requirements": {
+    "note-crud": {"status": "present", "evidence": "Admin owns four editable notes."},
+    "note-filter": {"status": "present", "evidence": "Quarterly Launch Plan contains the unique phrase April rollout."},
+    "note-sort": {"status": "present", "evidence": "Four notes have distinct titles and fixed created/modified timestamps."},
+    "pinned-note": {"status": "present", "evidence": "Quarterly Launch Plan is pinned."}
+  }
+}

@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1.7
+FROM node:20-bookworm AS client
+WORKDIR /src/client
+COPY client/package.json client/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
+COPY client/ ./
+RUN npm run build
+
+FROM composer:2 AS vendor
+WORKDIR /src/server
+COPY server/composer.json server/composer.lock ./
+RUN --mount=type=cache,target=/tmp/cache composer install --no-dev --no-interaction --prefer-dist --no-scripts --optimize-autoloader
+
+FROM php:8.2-fpm AS php-fpm
+WORKDIR /var/www/html
+RUN docker-php-ext-install pdo_mysql
+COPY server/ ./server/
+COPY --from=vendor /src/server/vendor ./server/vendor/
+COPY --from=client /src/client/build ./client/build/
+COPY docker/tester-env/server.env ./server/.env
+
+FROM nginx:1.27-alpine AS nginx
+COPY docker/tester-env/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=client /src/client/build /var/www/html/client/build

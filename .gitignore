@@ -3,5 +3,7 @@
 /docker/**
 !/docker/nginx/
 !/docker/php-fpm/
+!/docker/tester-env/
+!/docker/tester-env/**
 .DS_Store
 *.zip
