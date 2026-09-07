@@ -498,6 +498,17 @@ class NotesStore {
         }
       }
     }
+
+    const serverIds = new Set(serverNotes.map((note) => note.id));
+    const staleIds = [];
+
+    await storage.table('notes').iterate((note, id) => {
+      if (!serverIds.has(id)) {
+        staleIds.push(id);
+      }
+    });
+
+    await Promise.all(staleIds.map((id) => storage.table('notes').removeItem(id)));
   }
 
   async fetchServerNotes() {
