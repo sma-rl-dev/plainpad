@@ -16,3 +16,5 @@ Credentials: `admin@example.org` / `12345678`. MySQL is an isolated Compose name
 The Docker daemon's custom-network pool is exhausted, so this prospect uses the default bridge and fixed internal host ports `19000` (PHP-FPM) and `13306` (MySQL); it is not parallel-run safe until a custom Docker network can be allocated.
 
 `seed` replaces the admin's notes with four fixed notes: pinned `Quarterly Launch Plan`, `Design Review Checklist`, `Incident Retrospective: API Timeout`, and `Vendor Renewal Notes`. Their timestamps are fixed from January through March 2024; `Quarterly Launch Plan` contains `April rollout` for filtering. `verify` logs in through the app API and checks the exact titles, pinned state, content, and timestamps.
+
+Acceptance evidence supplied by the orchestrator: source build and reset passed; browser smoke passed; two `reset` → `deploy` → `seed` → `verify` cycles reproduced the four-note seed; and the seeded notes were visible in the browser.
