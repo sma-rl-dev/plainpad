@@ -5,7 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUN_SUFFIX="${RUN_ID:+-${RUN_ID}}"
 PROJECT="tester-env-plainpad${RUN_SUFFIX}"
 IMAGE_NAME="${IMAGE_TAG:-tester-env-plainpad:dev}"
-PORT="${PLAINPAD_PORT:-8098}"
+# PORT is set by scripts/rl-env to the allocated host port; manual runs keep 8098.
+PORT="${PORT:-${PLAINPAD_PORT:-8098}}"
 COMPOSE=(docker compose -p "$PROJECT" -f "$SCRIPT_DIR/docker-compose.tester-env.yml")
 
 compose() { IMAGE_TAG="$IMAGE_NAME" NGINX_IMAGE="${IMAGE_NAME%:*}:${IMAGE_NAME##*:}-nginx" PLAINPAD_PORT="$PORT" "${COMPOSE[@]}" "$@"; }
